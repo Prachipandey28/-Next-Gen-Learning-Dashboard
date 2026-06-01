@@ -107,7 +107,16 @@ export default function BentoGrid({ courses, isDemo, error }: BentoGridProps) {
         ))}
 
         {/* Bonus Tile: Futuristic Quick Tips / System Status */}
-        <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 glass-card border-glow-cyan relative overflow-hidden rounded-3xl p-6 flex flex-col sm:flex-row items-center gap-6 min-h-[140px]">
+        <motion.div
+          variants={itemVariants}
+          className="col-span-1 md:col-span-2 glass-card relative overflow-hidden rounded-3xl p-6 flex flex-col sm:flex-row items-center gap-6 min-h-[140px] border border-white/5 cursor-default select-none"
+          whileHover={{
+            scale: 1.012,
+            borderColor: "rgba(6, 182, 212, 0.4)",
+            boxShadow: "0 0 25px rgba(6, 182, 212, 0.15)"
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
           <div className="mesh-bg mesh-cyan" />
           <div className="w-14 h-14 rounded-2xl bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center text-accent-cyan flex-shrink-0">
             <Layers className="w-7 h-7" />
