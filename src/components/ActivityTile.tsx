@@ -66,7 +66,15 @@ export default function ActivityTile() {
   };
 
   return (
-    <article className="glass-card border-glow-blue relative overflow-hidden rounded-3xl p-6 h-full flex flex-col justify-between min-h-[360px]">
+    <motion.article 
+      className="glass-card relative overflow-hidden rounded-3xl p-6 h-full flex flex-col justify-between min-h-[360px] border border-white/5"
+      whileHover={{
+        scale: 1.012,
+        borderColor: "rgba(59, 130, 246, 0.4)",
+        boxShadow: "0 0 25px rgba(59, 130, 246, 0.15)"
+      }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    >
       <div className="mesh-bg mesh-blue" />
       <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
 
@@ -205,6 +213,6 @@ export default function ActivityTile() {
           ))}
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }

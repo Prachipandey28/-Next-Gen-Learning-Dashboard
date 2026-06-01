@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export interface Course {
   id: string;
@@ -40,20 +41,19 @@ export const MOCK_COURSES: Course[] = [
   },
 ];
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+// Read server-only environment variables (prevents exposure to browser bundle)
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
 
 const isSupabaseConfigured = supabaseUrl && supabaseAnonKey;
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
-
 export async function getCourses(): Promise<{ data: Course[]; isDemo: boolean; error: string | null }> {
-  // Simulate database network latency so that the skeleton loading animations can be appreciated!
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  // Simulate network delay to appreciate skeleton loading animations only in development mode
+  if (process.env.NODE_ENV === "development") {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+  }
 
-  if (!isSupabaseConfigured || !supabase) {
+  if (!isSupabaseConfigured) {
     console.log("\x1b[33m%s\x1b[0m", "⚠️  Supabase environment keys are missing. Running in DEMO MODE with mock data.");
     return {
       data: MOCK_COURSES,
@@ -63,6 +63,24 @@ export async function getCourses(): Promise<{ data: Course[]; isDemo: boolean; e
   }
 
   try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Can be ignored if handled by middleware session refreshes
+          }
+        },
+      },
+    });
+
     const { data, error } = await supabase
       .from("courses")
       .select("*")
@@ -91,12 +109,13 @@ export async function getCourses(): Promise<{ data: Course[]; isDemo: boolean; e
       isDemo: false,
       error: null,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
     console.error("❌ Exception during Supabase fetch:", err);
     return {
       data: MOCK_COURSES,
       isDemo: true,
-      error: `Connection exception: ${err.message || err}. Loaded sandbox fallback instead.`,
+      error: `Connection exception: ${errMsg}. Loaded sandbox fallback instead.`,
     };
   }
 }

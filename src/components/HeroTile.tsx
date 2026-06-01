@@ -18,7 +18,15 @@ export default function HeroTile() {
   }, []);
 
   return (
-    <article className="glass-card border-glow-purple relative overflow-hidden rounded-3xl p-6 lg:p-8 flex flex-col justify-between h-full min-h-[220px]">
+    <motion.article 
+      className="glass-card relative overflow-hidden rounded-3xl p-6 lg:p-8 flex flex-col justify-between h-full min-h-[220px] border border-white/5"
+      whileHover={{
+        scale: 1.012,
+        borderColor: "rgba(139, 92, 246, 0.4)",
+        boxShadow: "0 0 25px rgba(139, 92, 246, 0.15)"
+      }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    >
       {/* Background Gradient Mesh */}
       <div className="mesh-bg mesh-purple" />
       
@@ -98,6 +106,6 @@ export default function HeroTile() {
           </div>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }

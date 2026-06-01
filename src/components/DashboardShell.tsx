@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import BentoGrid from "./BentoGrid";
 import CourseTile from "./CourseTile";
 import { Course } from "@/lib/supabase";
+import ErrorState from "./ErrorState";
 import { 
   Sparkles, 
   Settings as SettingsIcon, 
@@ -15,7 +16,9 @@ import {
   Database,
   ArrowRight,
   Shield,
-  HelpCircle
+  HelpCircle,
+  AlertCircle,
+  AlertTriangle
 } from "lucide-react";
 
 interface DashboardShellProps {
@@ -26,10 +29,26 @@ interface DashboardShellProps {
 
 export default function DashboardShell({ courses, isDemo, error }: DashboardShellProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [simulateError, setSimulateError] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
+        if (simulateError) {
+          return (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8"
+            >
+              <ErrorState 
+                message="Supabase query exception: PostgreSQL pool timeout. Toggled via dashboard sandbox simulation." 
+                onRetry={() => setSimulateError(false)} 
+              />
+            </motion.div>
+          );
+        }
         return <BentoGrid courses={courses} isDemo={isDemo} error={error} />;
       
       case "courses":
@@ -173,6 +192,25 @@ export default function DashboardShell({ courses, isDemo, error }: DashboardShel
                 </div>
               </div>
             </div>
+
+            {/* Error State Simulation Panel */}
+            <div className="glass-card rounded-2xl border border-white/5 p-6 space-y-4">
+              <h3 className="font-semibold text-white flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-accent-orange" /> Error Recovery Testing
+              </h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Test and verify our custom database error handling page. Toggling this simulation will temporarily mock a database offline exception.
+              </p>
+              <button
+                onClick={() => {
+                  setSimulateError(true);
+                  setActiveTab("dashboard");
+                }}
+                className="px-4 py-2.5 rounded-xl bg-accent-orange/10 border border-accent-orange/20 hover:bg-accent-orange/20 text-accent-orange text-xs font-bold transition-all flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center"
+              >
+                <AlertTriangle className="w-4 h-4 animate-pulse" /> Simulate Database Connection Failure
+              </button>
+            </div>
           </motion.div>
         );
       
@@ -195,9 +233,16 @@ export default function DashboardShell({ courses, isDemo, error }: DashboardShel
         
         {/* Staggered transition container */}
         <AnimatePresence mode="wait">
-          <div className="relative z-10 flex-1 flex flex-col">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.25 }}
+            className="relative z-10 flex-1 flex flex-col"
+          >
             {renderContent()}
-          </div>
+          </motion.div>
         </AnimatePresence>
       </main>
     </div>

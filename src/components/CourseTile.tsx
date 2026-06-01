@@ -78,8 +78,12 @@ export default function CourseTile({ course, index }: CourseTileProps) {
 
   return (
     <motion.article
-      className={`glass-card ${theme.borderGlow} relative overflow-hidden rounded-3xl p-6 flex flex-col justify-between min-h-[170px] select-none`}
-      whileHover={{ scale: 1.018 }}
+      className="glass-card relative overflow-hidden rounded-3xl p-6 flex flex-col justify-between min-h-[170px] select-none border border-white/5"
+      whileHover={{ 
+        scale: 1.018,
+        borderColor: theme.glowColor,
+        boxShadow: `0 0 25px ${theme.glowColor}`
+      }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       {/* Background Gradient Mesh */}
