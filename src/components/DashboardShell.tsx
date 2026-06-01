@@ -133,7 +133,7 @@ export default function DashboardShell({ courses, isDemo, error }: DashboardShel
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Display Nickname</label>
                   <input 
                     type="text" 
-                    defaultValue="Avinash Pandey"
+                    defaultValue="Prachi Pandey"
                     className="w-full bg-[#0a0c10] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-purple/50 transition-colors"
                   />
                 </div>

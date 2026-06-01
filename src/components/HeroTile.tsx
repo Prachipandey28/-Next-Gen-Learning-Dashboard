@@ -34,7 +34,7 @@ export default function HeroTile() {
           </div>
           
           <h1 className="font-display font-bold text-3xl lg:text-4xl text-white tracking-tight leading-tight">
-            Welcome back, <span className="bg-gradient-to-r from-accent-purple via-accent-pink to-accent-orange bg-clip-text text-transparent">Avinash</span>!
+            Welcome back, <span className="bg-gradient-to-r from-accent-purple via-accent-pink to-accent-orange bg-clip-text text-transparent">Prachi</span>!
           </h1>
           <p className="text-gray-400 text-sm mt-2 max-w-md">
             You've completed <span className="text-white font-medium">85%</span> of your weekly goals. Ready to level up your frontend engineering craft?

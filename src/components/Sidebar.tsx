@@ -123,7 +123,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           <div className="pt-6 border-t border-[#1a1e26] space-y-3">
             <div className="flex items-center gap-3 px-3 overflow-hidden">
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-accent-purple to-accent-cyan flex-shrink-0 flex items-center justify-center font-bold text-white shadow-lg">
-                AP
+                PP
               </div>
               {!isCollapsed && (
                 <motion.div 
@@ -131,7 +131,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <span className="text-sm font-semibold text-white truncate">Avinash Pandey</span>
+                  <span className="text-sm font-semibold text-white truncate">Prachi Pandey</span>
                   <span className="text-xs text-gray-500 truncate flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-accent-purple" /> Intern Explorer
                   </span>
