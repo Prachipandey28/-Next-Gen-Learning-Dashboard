@@ -30,6 +30,7 @@ interface DashboardShellProps {
 export default function DashboardShell({ courses, isDemo, error }: DashboardShellProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [simulateError, setSimulateError] = useState(false);
+  const [userName, setUserName] = useState("Prachi");
 
   const renderContent = () => {
     switch (activeTab) {
@@ -49,7 +50,7 @@ export default function DashboardShell({ courses, isDemo, error }: DashboardShel
             </motion.div>
           );
         }
-        return <BentoGrid courses={courses} isDemo={isDemo} error={error} />;
+        return <BentoGrid courses={courses} isDemo={isDemo} error={error} userName={userName} />;
       
       case "courses":
         return (
@@ -152,7 +153,8 @@ export default function DashboardShell({ courses, isDemo, error }: DashboardShel
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Display Nickname</label>
                   <input 
                     type="text" 
-                    defaultValue="Prachi Pandey"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
                     className="w-full bg-[#0a0c10] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-purple/50 transition-colors"
                   />
                 </div>

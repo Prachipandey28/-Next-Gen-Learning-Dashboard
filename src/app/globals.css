@@ -86,6 +86,10 @@ body {
   background: radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.6) 0%, transparent 60%);
 }
 
+.mesh-pink {
+  background: radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.6) 0%, transparent 60%);
+}
+
 /* Background grid overlay */
 .bg-grid-pattern {
   background-size: 40px 40px;

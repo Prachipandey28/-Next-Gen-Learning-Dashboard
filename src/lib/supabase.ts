@@ -9,6 +9,12 @@ export interface Course {
   created_at: string;
 }
 
+export type CourseFetchResult = {
+  data: Course[];
+  isDemo: boolean;
+  error: string | null;
+};
+
 // Local mock data fallback with design tokens
 export const MOCK_COURSES: Course[] = [
   {
@@ -45,9 +51,9 @@ export const MOCK_COURSES: Course[] = [
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
 
-const isSupabaseConfigured = supabaseUrl && supabaseAnonKey;
+const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
-export async function getCourses(): Promise<{ data: Course[]; isDemo: boolean; error: string | null }> {
+export async function getCourses(): Promise<CourseFetchResult> {
   // Simulate network delay to appreciate skeleton loading animations only in development mode
   if (process.env.NODE_ENV === "development") {
     await new Promise((resolve) => setTimeout(resolve, 1500));

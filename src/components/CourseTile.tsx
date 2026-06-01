@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import { Course } from "@/lib/supabase";
@@ -10,16 +10,7 @@ interface CourseTileProps {
   index: number;
 }
 
-// Icon mappings based on db text string
-const iconMap: Record<string, React.ComponentType<any>> = {
-  Atom: LucideIcons.Atom,
-  Cpu: LucideIcons.Cpu,
-  Palette: LucideIcons.Palette,
-  Database: LucideIcons.Database,
-  BookOpen: LucideIcons.BookOpen,
-};
-
-// Design configuration maps
+// Design configuration maps with expanded fallback structures
 const themeMap: Record<string, {
   borderGlow: string;
   meshClass: string;
@@ -60,20 +51,30 @@ const themeMap: Record<string, {
     progressBar: "bg-gradient-to-r from-accent-orange to-accent-pink shadow-[0_0_10px_rgba(249,115,22,0.3)]",
     glowColor: "rgba(249, 115, 22, 0.4)",
   },
+  Compass: {
+    borderGlow: "border-glow-blue",
+    meshClass: "mesh-blue",
+    iconBg: "bg-accent-blue/10 border border-accent-blue/20",
+    iconColor: "text-accent-blue",
+    progressBar: "bg-gradient-to-r from-accent-blue to-accent-cyan shadow-[0_0_10px_rgba(59,130,246,0.3)]",
+    glowColor: "rgba(59, 130, 246, 0.4)",
+  },
+  Layers: {
+    borderGlow: "border-glow-pink",
+    meshClass: "mesh-pink",
+    iconBg: "bg-accent-pink/10 border border-accent-pink/20",
+    iconColor: "text-accent-pink",
+    progressBar: "bg-gradient-to-r from-accent-pink to-accent-purple shadow-[0_0_10px_rgba(236,72,153,0.3)]",
+    glowColor: "rgba(236, 72, 153, 0.4)",
+  },
 };
 
 export default function CourseTile({ course, index }: CourseTileProps) {
-  const [animatedProgress, setAnimatedProgress] = useState(0);
-
-  // Set the animated progress bar to animate from 0% on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimatedProgress(course.progress);
-    }, 200 + index * 100);
-    return () => clearTimeout(timer);
-  }, [course.progress, index]);
-
-  const IconComponent = iconMap[course.icon_name] || LucideIcons.BookOpen;
+  // Dynamically lookup ANY Lucide icon component based on the DB string name.
+  // Fallback to BookOpen if icon name doesn't match or is missing.
+  const IconComponent = (LucideIcons as any)[course.icon_name] || LucideIcons.BookOpen;
+  
+  // Select matching theme or fallback gracefully to Purple (Atom) theme
   const theme = themeMap[course.icon_name] || themeMap.Atom;
 
   return (
@@ -119,11 +120,17 @@ export default function CourseTile({ course, index }: CourseTileProps) {
           <span className="text-white">{course.progress}%</span>
         </div>
         
-        {/* Animated Custom Progress Bar */}
+        {/* Animated Custom Progress Bar using GPU accelerated Framer Motion */}
         <div className="w-full h-2 bg-[#090b0e] border border-white/[0.03] rounded-full overflow-hidden">
-          <div
-            className={`progress-fill h-full rounded-full ${theme.progressBar}`}
-            style={{ width: `${animatedProgress}%` }}
+          <motion.div
+            className={`h-full rounded-full ${theme.progressBar}`}
+            initial={{ width: 0 }}
+            animate={{ width: `${course.progress}%` }}
+            transition={{
+              duration: 1.2,
+              delay: 0.1 + index * 0.08,
+              ease: [0.25, 1, 0.5, 1]
+            }}
           />
         </div>
       </div>

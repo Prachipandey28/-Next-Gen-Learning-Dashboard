@@ -3,11 +3,20 @@ import { getCourses } from "@/lib/supabase";
 import DashboardShell from "@/components/DashboardShell";
 import SkeletonLoader from "@/components/SkeletonLoader";
 
-// Tell Next.js to dynamically render this page (RSC streaming)
+/**
+ * Force-dynamic ensures Next.js does not pre-render the page statically.
+ * This is crucial for retrieving live PostgreSQL rows from Supabase server-side on every request
+ * and allowing the React Server Component (RSC) streaming model to work dynamically.
+ */
 export const dynamic = "force-dynamic";
 
+/**
+ * Server Component that securely retrieves courses from the Supabase database.
+ * The connection keys are read strictly server-side and are never exposed to the client-side bundle,
+ * satisfying strict client/server isolation constraints.
+ */
 async function AsyncDashboard() {
-  // Fetch courses from Supabase or the high-fidelity demo fallback server-side
+  // Fetch courses from Supabase with high-fidelity local sandbox fallback
   const { data: courses, isDemo, error } = await getCourses();
 
   return (
@@ -19,6 +28,12 @@ async function AsyncDashboard() {
   );
 }
 
+/**
+ * Page Root Component.
+ * Implements a React Suspense boundary to support modern Next.js streaming.
+ * The SkeletonLoader mirrors the visual structural shell of the Sidebar and BentoGrid,
+ * preventing Cumulative Layout Shift (CLS) when the database query completes.
+ */
 export default function Page() {
   return (
     <Suspense fallback={<SkeletonLoader />}>

@@ -1,68 +1,59 @@
-# Aetheria - Next-Gen Student Learning Dashboard
+# Aetheria — Next-Gen Student Learning Dashboard
 
-A futuristic, highly animated, and fully responsive student performance and adaptive learning dashboard built using **Next.js (App Router)**, **Tailwind CSS**, **Framer Motion**, and **Supabase**.
+A futuristic, highly animated, and fully responsive student performance and adaptive learning dashboard built using **Next.js (App Router)**, **Tailwind CSS (v4)**, **Framer Motion**, and **Supabase (PostgreSQL)**.
 
 ---
 
 ## 🛠️ Architectural Choices & Tech Stack
 
-Our stack is strictly selected to satisfy constraints and deliver a premium, hardware-accelerated user experience:
-1. **Framework: Next.js (App Router)** — Leveraging Server Components for optimal server-side data loading, combined with React Suspense for smooth, modern streaming load layouts.
-2. **Database: Supabase (PostgreSQL)** — Direct, robust integration using `@supabase/ssr` to connect securely from the server.
-3. **Styling: Tailwind CSS (v4)** — Embracing the cutting-edge Tailwind CSS v4 pipeline. Theme definitions, keyframes, and animations are managed directly inside `src/app/globals.css` via custom `@theme` variables.
-4. **Animations: Framer Motion (Strict Constraint)** — Used for staggered page entries, spring-physics hover interactions, and smooth tab slide micro-interactions.
-5. **Icons: Lucide React** — Standard visual icons mapped dynamically based on database course titles.
+Our stack is strictly selected to satisfy advanced frontend engineering constraints and deliver a premium, hardware-accelerated user experience:
+1. **Framework: Next.js (App Router)** — Leveraging Server Components for secure server-side data loading, combined with React Suspense for modern streamed skeleton loader.
+2. **Database: Supabase (PostgreSQL)** — Robust direct query interface utilizing `@supabase/ssr` to securely connect server-side.
+3. **Styling: Tailwind CSS (v4)** — Embracing the cutting-edge Tailwind CSS v4 pipeline. Theme definitions, gradients, and custom utility variables are declared directly inside `src/app/globals.css` via clean `@theme` CSS tokens.
+4. **Animations: Framer Motion** — Used for staggered page entrances, spring-physics scale hover states, active tab highlights (`layoutId`), and custom SVG path animations.
+5. **Icons: Lucide React** — Rich icon pack dynamically mapped and rendered from raw database string strings.
 
 ---
 
 ## ⚡ Server/Client Component Split Rationale
 
-To secure credentials and prevent browser performance issues, the application strictly isolates server and client logic:
+To secure credentials and prevent browser runtime blocks, the application strictly isolates server and client-side execution contexts:
 
-### Server Components (RSC)
-* **`src/app/page.tsx` & `src/lib/supabase.ts`**: The database queries to Supabase are executed entirely server-side inside `getCourses()`. This allows us to connect securely using server-only variables (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) which never expose database keys or configuration parameters to the client-side JavaScript bundle.
-* **React Suspense Boundary**: The root page uses an async component wrapped in `<Suspense fallback={<SkeletonLoader />}>`. This enables Next.js to stream the page frame and load the pulsing skeleton immediately before the server completes the database query.
+### React Server Components (RSC)
+* **`src/app/page.tsx` & `src/lib/supabase.ts`**: All query bindings to Supabase are executed entirely server-side inside `getCourses()`. This allows us to securely read secret environment variables (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) which never expose database keys or configuration parameters to the client-side JavaScript bundle.
+* **React Suspense Boundary**: The root page uses an async database fetching model wrapped in `<Suspense fallback={<SkeletonLoader />}>`. This enables Next.js to stream the page frame and load the pulsing skeleton instantly.
 
 ### Client Components
-* **`Sidebar.tsx`**: Manages interactive states (manually collapsing on desktop, auto-collapsing on tablet, and sliding highlights using Framer Motion `layoutId`).
-* **`DashboardShell.tsx`**: Orchestrates client-side state for tab switching, profile preference inputs, and simulation triggers.
-* **`CourseTile.tsx`, `HeroTile.tsx`, `ActivityTile.tsx`**: Coordinate rich browser animations, local clock timers, dynamic progress bars animating from 0% on mount, and spring-physics boundary hover scaling.
+* **`Sidebar.tsx`**: Manages interactive states (manually collapsing on desktop, auto-collapsing on tablet using dynamic `window.matchMedia` viewport queries, and sliding active highlights).
+* **`DashboardShell.tsx`**: Coordinates client-side state for tab switching, real-time nickname settings updates, and connection testing triggers.
+* **`CourseTile.tsx`**: Renders dynamic course items, looking up any valid Lucide icon name stored in the database, with custom hardware-accelerated progress bars.
+* **`HeroTile.tsx`**: Displays live greetings (with real-time state link to profile settings) and interactive streak/trophy flame indicators.
+* **`ActivityTile.tsx`**: Renders contribution matrix maps, SVG area metrics, and weekly-monthly charts.
 
 ---
 
 ## 💎 Zero Layout Shift (CLS) & Performance
 
 We enforce strict GPU hardware-accelerated animations using `transform` (scale, translate) and `opacity` exclusively:
-* **Staggered Entries**: Staggered cards fade and slide up sequentially on mount without causing adjacent grid element reflows.
-* **Spring Hover Physics**: Scale increases smoothly by `~1.8%` on hover using spring physics (`stiffness: 300`, `damping: 20`) which ensures a natural, non-linear animation curve.
-* **Framer Motion spring border glows**: Glow shadows are calculated and injected via Framer Motion's `whileHover` prop directly into the canvas boundary border, eliminating raw CSS paint repaints.
+* **True Zero-CLS Skeletons**: `SkeletonLoader.tsx` mimics the exact desktop sidebar and mobile bottom navigation layout. During loading states, only the inner bento grid items pulse, guaranteeing zero Cumulative Layout Shift (CLS) when server data streams in.
+* **Spring Hover Physics**: Hover interactions scale cards smoothly by `~1.2%` using spring physics (`stiffness: 300`, `damping: 20`) to achieve a natural, tactile animation curve.
+* **Framer Motion Progress Bars**: Replaced legated CSS transitions with dynamic `motion.div` attributes on mount. Bars slide to their exact database progress percentage with micro-staggers based on card grid indices.
 
 ---
 
-## 🚧 Challenges Faced & Resolutions
+## 🚀 Connection Setup & Database Schema
 
-1. **Upper-Case Directory Naming Constraints**: 
-   * *Problem*: The root workspace folder (`FRONTENED`) contains capital letters. Initializing Next.js in `./` failed because npm package names restrict upper-case characters.
-   * *Resolution*: Created the initial template inside a lowercase subdirectory (`learning-dashboard`) first, then safely migrated all hidden and standard configuration files to the root level.
-2. **Framer Motion TS Type Declarations**:
-   * *Problem*: When using standard variants, TypeScript threw errors because the variant string literal `"spring"` was inferred as a generic `string` type, causing type mismatch inside Next.js production builds.
-   * *Resolution*: Imported and typed layout variables explicitly using `Variants` from `framer-motion` to satisfy compiler safety.
-3. **Responsive Tablet Collapse Breaks**:
-   * *Problem*: The tablet view layout required the sidebar to auto-collapse to icon-only view between `768px` and `1024px` breakpoint. Manually toggling or writing custom CSS media selectors interfered with isCollapsed states.
-   * *Resolution*: Implemented a clean, modern react `useEffect` listener inside the sidebar using `window.matchMedia` that automatically toggles the collapse state dynamically when scaling the browser.
-4. **Keyless AnimatePresence Transition Fails**:
-   * *Problem*: Unkeyed container divs inside `<AnimatePresence>` prevented children tab elements from executing exit animations when switching views.
-   * *Resolution*: Upgraded the main container to an animated, keyed `<motion.div key={activeTab}>` to ensure exit callbacks are fired correctly.
-
----
-
-## 🚀 Connection Setup & Sandbox Testing
-
-1. Rename `.env.example` to `.env.local` and add your secure keys:
+1. Copy `.env.example` to `.env.local` at the project root and fill in your keys:
    ```env
+   # Supabase PostgreSQL Configuration
+   # Copy this file to .env.local and fill in your project values
+   # Never commit .env.local to version control
+
    SUPABASE_URL=https://your-project-id.supabase.co
    SUPABASE_ANON_KEY=your-anon-key-here
    ```
+   *Note: If environment keys are missing, the project will automatically start in high-fidelity **Aetheria Sandbox Demo Mode** with comprehensive mockup rows and a notification banner.*
+
 2. Set up the `courses` PostgreSQL schema in your Supabase project:
    ```sql
    create table courses (
@@ -73,4 +64,24 @@ We enforce strict GPU hardware-accelerated animations using `transform` (scale, 
      created_at timestamp with time zone default timezone('utc'::text, now()) not null
    );
    ```
-3. To test the **ErrorState** recovery and retry mechanism, head to the **Settings** tab inside the dashboard, and click the **Simulate Database Connection Failure** button. It will immediately trigger our custom offline recovery screen where you can click **Reconnect Database** to restore normal operation.
+
+3. Populate with initial course data (supports all Lucide icon names):
+   ```sql
+   insert into courses (title, progress, icon_name) values
+   ('Advanced React Patterns & Architecture', 78, 'Atom'),
+   ('Data Structures, Algorithms & Systems', 45, 'Cpu'),
+   ('Futuristic Tailwind, Meshes & SVG Canvas', 92, 'Palette'),
+   ('Modern Backend & Realtime Supabase', 60, 'Database'),
+   ('Astronomy & Physics of Design Systems', 35, 'Compass'),
+   ('System Complexity & Structural Optimization', 82, 'Layers');
+   ```
+
+---
+
+## 🚧 Error Handling & Sandbox Testing
+
+* **Offline Reconnect States**: If the Supabase instance goes offline or network blocks occur, a connection failure screen (`ErrorState.tsx`) handles the query crash gracefully. Users can retry or click **Load Local Sandbox** to run locally.
+* **Simulate DB Failure**: To test and appreciate the error boundaries:
+  1. Head to the **Settings** tab on the sidebar.
+  2. Click the **Simulate Database Connection Failure** button under *Error Recovery Testing*.
+  3. The app will immediately trigger the connection failure screen. Click **Reconnect Database** to restore normal operation.

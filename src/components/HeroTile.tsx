@@ -4,7 +4,11 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Flame, Sparkles, Trophy, CalendarDays, Clock } from "lucide-react";
 
-export default function HeroTile() {
+interface HeroTileProps {
+  userName?: string;
+}
+
+export default function HeroTile({ userName }: HeroTileProps) {
   const [time, setTime] = useState("");
 
   useEffect(() => {
@@ -17,9 +21,15 @@ export default function HeroTile() {
     return () => clearInterval(interval);
   }, []);
 
+  // Determine standard username fallback order:
+  // 1. prop passed down from real-time profile settings
+  // 2. environment variable configuration
+  // 3. standard hardcoded spec default "Prachi"
+  const displayName = userName || process.env.NEXT_PUBLIC_USER_NAME || "Prachi";
+
   return (
     <motion.article 
-      className="glass-card relative overflow-hidden rounded-3xl p-6 lg:p-8 flex flex-col justify-between h-full min-h-[220px] border border-white/5"
+      className="glass-card relative overflow-hidden rounded-3xl p-6 lg:p-8 flex flex-col justify-between h-full min-h-[220px] border border-white/5 select-none"
       whileHover={{
         scale: 1.012,
         borderColor: "rgba(139, 92, 246, 0.4)",
@@ -41,10 +51,10 @@ export default function HeroTile() {
             Adaptive Learning Active
           </div>
           
-          <h1 className="font-display font-bold text-3xl lg:text-4xl text-white tracking-tight leading-tight">
-            Welcome back, <span className="bg-gradient-to-r from-accent-purple via-accent-pink to-accent-orange bg-clip-text text-transparent">Prachi</span>!
+          <h1 className="font-display font-bold text-3xl lg:text-4xl text-white tracking-tight leading-tight text-left">
+            Welcome back, <span className="bg-gradient-to-r from-accent-purple via-accent-pink to-accent-orange bg-clip-text text-transparent">{displayName}</span>!
           </h1>
-          <p className="text-gray-400 text-sm mt-2 max-w-md">
+          <p className="text-gray-400 text-sm mt-2 max-w-md text-left">
             You've completed <span className="text-white font-medium">85%</span> of your weekly goals. Ready to level up your frontend engineering craft?
           </p>
         </div>
@@ -58,8 +68,12 @@ export default function HeroTile() {
 
       {/* Footer Stats & Streak */}
       <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-white/5">
-        {/* Streak Indicator */}
-        <div className="flex items-center gap-4 bg-white/[0.01] border border-white/5 rounded-2xl p-4 hover:bg-white/[0.02] transition-colors group">
+        {/* Streak Indicator with Spring Hover Micro-interactions */}
+        <motion.div 
+          className="flex items-center gap-4 bg-white/[0.01] border border-white/5 rounded-2xl p-4 hover:bg-white/[0.02] transition-colors group cursor-default"
+          whileHover={{ y: -3, borderColor: "rgba(249, 115, 22, 0.3)" }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
           <div className="relative">
             {/* Pulsing ring behind flame */}
             <motion.div
@@ -67,9 +81,13 @@ export default function HeroTile() {
               animate={{ scale: [1, 1.25, 1] }}
               transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
             />
-            <div className="relative w-12 h-12 rounded-xl bg-gradient-to-tr from-accent-orange to-red-500 flex items-center justify-center text-white shadow-lg shadow-accent-orange/30 group-hover:scale-105 transition-transform duration-300">
+            <motion.div 
+              className="relative w-12 h-12 rounded-xl bg-gradient-to-tr from-accent-orange to-red-500 flex items-center justify-center text-white shadow-lg shadow-accent-orange/30"
+              whileHover={{ scale: 1.08, rotate: [0, -5, 5, 0] }}
+              transition={{ duration: 0.4 }}
+            >
               <Flame className="w-6 h-6 animate-pulse" />
-            </div>
+            </motion.div>
           </div>
           <div className="text-left">
             <div className="text-xs text-gray-500 font-medium flex items-center gap-1">
@@ -82,13 +100,20 @@ export default function HeroTile() {
               +15% XP Boost Applied
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Level Progress */}
-        <div className="flex items-center gap-4 bg-white/[0.01] border border-white/5 rounded-2xl p-4 hover:bg-white/[0.02] transition-colors group">
-          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-tr from-accent-purple to-accent-blue flex items-center justify-center text-white shadow-lg shadow-accent-purple/30 group-hover:scale-105 transition-transform duration-300">
+        {/* Level Progress with Spring Hover Micro-interactions */}
+        <motion.div 
+          className="flex items-center gap-4 bg-white/[0.01] border border-white/5 rounded-2xl p-4 hover:bg-white/[0.02] transition-colors group cursor-default"
+          whileHover={{ y: -3, borderColor: "rgba(139, 92, 246, 0.3)" }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          <motion.div 
+            className="relative w-12 h-12 rounded-xl bg-gradient-to-tr from-accent-purple to-accent-blue flex items-center justify-center text-white shadow-lg shadow-accent-purple/30"
+            whileHover={{ scale: 1.08 }}
+          >
             <Trophy className="w-6 h-6" />
-          </div>
+          </motion.div>
           <div className="text-left flex-1">
             <div className="text-xs text-gray-500 font-medium">Rank & Level</div>
             <div className="text-lg font-display font-bold text-white leading-tight flex items-center gap-1.5">
@@ -104,7 +129,7 @@ export default function HeroTile() {
               />
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </motion.article>
   );

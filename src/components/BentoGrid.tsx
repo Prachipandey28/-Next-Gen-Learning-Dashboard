@@ -12,6 +12,7 @@ interface BentoGridProps {
   courses: Course[];
   isDemo: boolean;
   error: string | null;
+  userName?: string;
 }
 
 // Staggered layout variants
@@ -39,7 +40,7 @@ const itemVariants: Variants = {
   },
 };
 
-export default function BentoGrid({ courses, isDemo, error }: BentoGridProps) {
+export default function BentoGrid({ courses, isDemo, error, userName }: BentoGridProps) {
   return (
     <section className="flex-1 w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
       
@@ -91,7 +92,7 @@ export default function BentoGrid({ courses, isDemo, error }: BentoGridProps) {
       >
         {/* Row 1, Col 1-2: Hero Greetings */}
         <motion.div variants={itemVariants} className="md:col-span-2">
-          <HeroTile />
+          <HeroTile userName={userName} />
         </motion.div>
 
         {/* Row 1-2, Col 3: Learning Metrics / Activity */}
